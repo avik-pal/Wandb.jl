@@ -5,8 +5,7 @@ Unofficial Julia Bindings for [wandb.ai](https://wandb.ai).
 ## Installation
 
 ```julia
-julia> ]
-pkg> add https://github.com/avik-pal/Wandb.jl
+] add https://github.com/avik-pal/Wandb.jl
 ```
 
 ---
@@ -17,13 +16,23 @@ Follow the [quickstart](https://docs.wandb.ai/quickstart) points 1 and 2 to get 
 
 ```julia
 # Initialize the project
-wandb_init(project = "Wandb.jl")
+lg = WandbLogger(project = "Wandb.jl", name = nothing)
+
+# Set logger globally / in scope / in combination with other loggers
+global_logger(lg)
 
 # Logging Values
-wandb_log(Dict("accuracy" => 0.9, "loss" => 0.3))
+log(lg, Dict("accuracy" => 0.9, "loss" => 0.3))
+
+# Even more conveniently
+@info "metrics" accuracy=0.9 loss=0.3
+@debug "metrics" not_print=-1  # Will have to change debug level for this to be logged
 
 # Tracking Hyperparameters
-wandb_update_config!(Dict("dropout" => 0.2))
+update_config!(lg, Dict("dropout" => 0.2))
+
+# Close the logger
+close(lg)  # `finish` works as well but is not a recommended api
 ```
 
 ---
@@ -37,26 +46,29 @@ Runs demonstrating these examples are available [here](https://wandb.ai/avikpal/
 Example borrowed from <a href="https://colab.research.google.com/drive/1aEv8Haa3ppfClcCiC2TB8WLHB4jnY_Ds#scrollTo=-VE3MabfZAcx">here</a>.
 
 ```julia
-using Wandb, Dates
+using Wandb, Dates, Logging
 
 # Start a new run, tracking hyperparameters in config
-wandb_init(project = "Wandb.jl",
-           name = "wandbjl-demo-$(now())",
-           config = Dict("learning_rate" => 0.01,
-                         "dropout" => 0.2,
-                         "architecture" => "CNN",
-                         "dataset" => "CIFAR-100"))
+lg = WandbLogger(project = "Wandb.jl",
+                 name = "wandbjl-demo-$(now())",
+                 config = Dict("learning_rate" => 0.01,
+                               "dropout" => 0.2,
+                               "architecture" => "CNN",
+                               "dataset" => "CIFAR-100"))
+
+# Use LoggingExtras.jl to log to multiple loggers together
+global_logger(lg)
 
 # Simulating the training or evaluation loop
 for x ∈ 1:50
-    acc = log(1 + x + rand() * wandb_get_config("learning_rate") + rand() + wandb_get_config("dropout"))
-    loss = 10 - log(1 + x + rand() + x * wandb_get_config("learning_rate") + rand() + wandb_get_config("dropout"))
+    acc = log(1 + x + rand() * get_config(lg, "learning_rate") + rand() + get_config(lg, "dropout"))
+    loss = 10 - log(1 + x + rand() + x * get_config(lg, "learning_rate") + rand() + get_config(lg, "dropout"))
     # Log metrics from your script to W&B
-    wandb_log(Dict("acc" => acc, "loss" => loss))
+    @info "metrics" accuracy=acc loss=loss
 end
 
 # Finish the run
-wandb_finish()
+close(lg)
 ```
 </p>
 </details>
@@ -76,7 +88,7 @@ using MLDatasets
 using Wandb
 using Dates
 
-wandb_init(
+lg = WandbLogger(
     project = "Wandb.jl",
     name = "fluxjl-integration-$(now())",
     config = Dict(
@@ -87,6 +99,8 @@ wandb_init(
         "use_cuda" => true,
     ),
 )
+
+global_logger(lg)
 
 ##################################################################################
 # Wandb # Instead of passing arguments around we will use the global configuration
@@ -109,10 +123,10 @@ function getdata(device)
     # Create DataLoaders (mini-batch iterators)
     train_loader = DataLoader(
         (xtrain, ytrain),
-        batchsize = wandb_get_config("batchsize"),
+        batchsize = get_config(lg, "batchsize"),
         shuffle = true,
     )
-    test_loader = DataLoader((xtest, ytest), batchsize = wandb_get_config("batchsize"))
+    test_loader = DataLoader((xtest, ytest), batchsize = get_config(lg, "batchsize"))
 
     return train_loader, test_loader
 end
@@ -141,7 +155,7 @@ function train(update_params::Dict = Dict())
     #################################
     # Wandb # Update config if needed
     #################################
-    wandb_update_config!(update_params)
+    update_config!(lg, update_params)
 
     if CUDA.functional() && wandb_get_config("use_cuda")
         @info "Training on CUDA GPU"
@@ -159,16 +173,11 @@ function train(update_params::Dict = Dict())
     model = build_model() |> device
     ps = Flux.params(model) # model's trainable parameters
 
-    ###########################
-    # Wandb # Set up the logger
-    ###########################
-    wblogger = wandb_flux_watch(ps, log_freq = 500)
-
     ## Optimizer
-    opt = ADAM(wandb_get_config("learning_rate"))
+    opt = ADAM(get_config(lg, "learning_rate"))
 
     ## Training
-    for epoch = 1:wandb_get_config("epochs")
+    for epoch = 1:get_config(lg, "epochs")
         for (x, y) in train_loader
             x, y = device(x), device(y) # transfer data to device
             gs = gradient(() -> logitcrossentropy(model(x), y), ps) # compute gradient
@@ -177,7 +186,7 @@ function train(update_params::Dict = Dict())
             ##########################################
             # Wandb # Log the gradients and parameters
             ##########################################
-            wandb_log(wblogger, cpu; parameters = ps, gradients = gs, commit = false)
+            log(wblogger, cpu; parameters = ps, gradients = gs, commit = false)
         end
 
         # Report on train and test
@@ -187,7 +196,8 @@ function train(update_params::Dict = Dict())
         ###################################
         # Wandb # Log the loss and accuracy
         ###################################
-        wandb_log(
+        log(
+            lg,
             Dict(
                 "Training/Loss" => train_loss,
                 "Training/Accuracy" => train_acc,
@@ -208,8 +218,16 @@ train()
 ################################
 # Wandb # Finish the Current Run
 ################################
-wandb_finish()
+close(lg)
 ```
+</p>
+</details>
+
+<details><summary>FluxTraining.jl Demo<br></summary>
+<p>
+We have bindings in the form of `WandbBackend` which can be used as a dropin replacement for the
+default `TensorboardBackend`. Just ensure that `FluxTraining.jl` is installed prior to loading
+this package.
 </p>
 </details>
 
@@ -217,25 +235,30 @@ wandb_finish()
 
 ## Available Logging Objects
 
-1. `wandb_image`
-2. `wandb_video`
-3. `wandb_histogram`
-4. `wandb_object3D`
-5. `wandb_precision_recall_curve`
-6. `FluxWandbLogger`
+1. `Image`
+2. `Video`
+3. `Histogram`
+4. `Object3D`
+5. `precision_recall`
+
+NOTE: These are not exported since these names are too generic.
+
+---
+
+## Third Party Integrations
+
+1. `FluxTraining.jl` --> `WandbBackend`
 
 ---
 
 ## Using Undocumented Features
 
-Most of the wandb API should be usable through `py_wandb`. In case something isn't working as expected, open an Issue/PR.
+Most of the wandb API should be usable through `Wandb.wandb`. In case something isn't working as expected, open an Issue/PR.
 
 ---
 
-## Features with no direct bindings
+## TODO
 
 1. `wandb.agent`
 2. `wandb.sweep`
-
-NOTE: I personally don't use `1` and `2` much so might not implement them. I am happy to accept PRs for the
-      these though.
+3. `Images.jl` dispatch for `Image`
