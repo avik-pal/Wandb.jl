@@ -5,5 +5,7 @@ version = "0.1.0"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+FluxTraining = "7bf95e4d-ca32-48da-9824-f0dc5310474f"
+OpenSSL_jll = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"

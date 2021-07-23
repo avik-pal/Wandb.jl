@@ -5,13 +5,7 @@ using PyCall, Conda, Requires
 const wandb = PyNULL()
 
 function __init__()
-    try
-        copy!(wandb, pyimport("wandb"))
-    catch
-        @info "Could not import wandb. Trying to automatically install. Install using `pip install wandb>=0.11` if this fails"
-        Conda.pip("install", "wandb>=0.11")
-        copy!(wandb, pyimport("wandb"))
-    end
+    copy!(wandb, pyimport("wandb"))
     @info "Using Wandb version $(wandb.__version__)"
 
     @require FluxTraining="7bf95e4d-ca32-48da-9824-f0dc5310474f" begin
@@ -193,9 +187,9 @@ end
 function Base.show(io::IO, lg::WandbLogger)
     str = "WandbLogger(\"$(lg.wrun.project)\", \"$(lg.wrun.name)\", "*
           "id=$(lg.wrun.id), min_level=$(lg.min_level), "*
-           "current_step=$(lg.global_step))"*
-          "\n@ $(lg.wrun.url)"
+           "current_step=$(lg.global_step))"
     Base.print(io, str)
+    Base.printstyled(io, " @ $(lg.wrun.url)", color = :yellow)
 end
 
 

@@ -4,23 +4,15 @@ import FluxTraining: Loggables, _combinename
 
 struct WandbBackend <: FluxTraining.LoggerBackend
     logger::WandbLogger
-    function WandbBackend(;
-        project,
-        name,
-        min_level = Info,
-        step_increment = 1,
-        start_step = 0,
-        kwargs...,
-    )
-        return new(WandbLogger(;project = project, name = name,
-                                min_level = min_level,
-                                step_increment = step_increment,
-                                start_step = start_step, kwargs...))
-    end
+
+    WandbBackend(;kwargs...) = new(WandbLogger(;kwargs...))
 end
 
-Base.show(io::IO, backend::WandbBackend) =
-    print(io, "WandbBackend(", show(io, backend.logger), ")")
+function Base.show(io::IO, backend::WandbBackend)
+    print(io, "WandbBackend(")
+    print(io, backend.logger)
+    print(io, ")")
+end
 
 
 function FluxTraining.log_to(backend::WandbBackend, value::Loggables.Value, name, i; group = ())
@@ -46,6 +38,9 @@ function FluxTraining.log_to(backend::WandbBackend, hist::Loggables.Histogram, n
     name = _combinename(name, group)
     log(backend.logger, Dict(name => Histogram(hist.data)); step = i)
 end
+
+
+Base.close(backend::WandbBackend) = close(backend.logger)
 
 
 export WandbBackend
