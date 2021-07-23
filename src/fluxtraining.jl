@@ -23,7 +23,7 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    log(backend.logger, Dict(name => cpu(value.data)); step = i)
+    log(backend.logger, Dict(name => cpu(value.data)))
 end
 
 
@@ -36,7 +36,7 @@ function FluxTraining.log_to(
 )
     name = _combinename(name, group)
     im = Image(collect(image.data))
-    log(backend.logger, Dict(name => im); step = i)
+    log(backend.logger, Dict(name => im))
 end
 
 
@@ -48,7 +48,7 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    og(backend.logger, Dict(name => text.data); step = i)
+    log(backend.logger, Dict(name => text.data))
 end
 
 
