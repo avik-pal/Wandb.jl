@@ -284,6 +284,15 @@ using PyCall
 run(`$(PyCall.pyprogramname) -m pip install numpy`)
 ```
 
+3. Can't use `Wandb.Image` / `FluxTraining.LogVisualization`
+
+Install `pillow`. Make sure to install in the same environment as `PyCall.jl`. This should do it
+
+```julia
+using PyCall
+run(`$(PyCall.pyprogramname) -m pip install pillow`)
+```
+
 ---
 
 ## TODO

@@ -39,11 +39,20 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    im = Image(collect(image.data))
+    imgs = Image.(collect(image.data))
     if length(group) == 0
-        log(backend.logger, Dict(name => im))
+        log(
+            backend.logger,
+            Dict([name * "_$i" => img for (i, img) in enumerate(imgs)]...),
+        )
     else
-        log(backend.logger, Dict(name => im, group[1] => i))
+        log(
+            backend.logger,
+            Dict(
+                [name * "_$i" => img for (i, img) in enumerate(imgs)]...,
+                group[1] => i,
+            ),
+        )
     end
 end
 
@@ -75,7 +84,10 @@ function FluxTraining.log_to(
     if length(group) == 0
         log(backend.logger, Dict(name => Histogram(cpu(hist.data))))
     else
-        log(backend.logger, Dict(name => Histogram(cpu(hist.data)), group[1] => i))
+        log(
+            backend.logger,
+            Dict(name => Histogram(cpu(hist.data)), group[1] => i),
+        )
     end
 end
 
