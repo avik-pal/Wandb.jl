@@ -70,7 +70,7 @@ function finish(lg::WandbLogger; kwargs...)
 end
 
 # https://docs.wandb.ai/ref/python/save
-save(lg::WandbLogger; kwargs...) = lg.wrun.save(; kwargs...)
+save(lg::WandbLogger, file::String; kwargs...) = lg.wrun.save(file; kwargs...)
 
 get_config(lg::WandbLogger) = lg.wrun.config
 get_config(lg::WandbLogger, key::String) = get(lg.wrun.config, key)
