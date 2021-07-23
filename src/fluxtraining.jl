@@ -23,7 +23,11 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    log(backend.logger, Dict(name => cpu(value.data)))
+    if length(group) == 0
+        log(backend.logger, Dict(name => cpu(value.data)))
+    else
+        log(backend.logger, Dict(name => cpu(value.data), group[1] => i))
+    end
 end
 
 
@@ -36,7 +40,11 @@ function FluxTraining.log_to(
 )
     name = _combinename(name, group)
     im = Image(collect(image.data))
-    log(backend.logger, Dict(name => im))
+    if length(group) == 0
+        log(backend.logger, Dict(name => im))
+    else
+        log(backend.logger, Dict(name => im, group[1] => i))
+    end
 end
 
 
@@ -48,7 +56,11 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    log(backend.logger, Dict(name => text.data))
+    if length(group) == 0
+        log(backend.logger, Dict(name => text.data))
+    else
+        log(backend.logger, Dict(name => text.data, group[i] => i))
+    end
 end
 
 
@@ -60,7 +72,11 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    log(backend.logger, Dict(name => Histogram(cpu(hist.data))))
+    if length(group) == 0
+        log(backend.logger, Dict(name => Histogram(cpu(hist.data))))
+    else
+        log(backend.logger, Dict(name => Histogram(cpu(hist.data)), group[1] => i))
+    end
 end
 
 
