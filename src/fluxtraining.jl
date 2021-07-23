@@ -60,7 +60,7 @@ function FluxTraining.log_to(
     group = (),
 )
     name = _combinename(name, group)
-    log(backend.logger, Dict(name => Histogram(cpu(hist.data))); step = i)
+    log(backend.logger, Dict(name => Histogram(cpu(hist.data))))
 end
 
 
