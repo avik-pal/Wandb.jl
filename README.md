@@ -4,8 +4,16 @@ Unofficial Julia Bindings for [wandb.ai](https://wandb.ai).
 
 ## Installation
 
+For stable release:
+
 ```julia
-] add https://github.com/avik-pal/Wandb.jl
+] add Wandb
+```
+
+For the `main` branch:
+
+```julia
+] add Wandb#main
 ```
 
 ---
