@@ -42,10 +42,18 @@ function WandbLogger(;
     kwargs...,
 )
     wrun = wandb.init(; project = project, name = name, kwargs...)
-    if wrun.name != name
+    if !isnothing(name) && wrun.name != name
         @warn "There is an ongoing wandb run. Please `close` the run before initializing a new one."
     end
     return WandbLogger(wrun, step_increment, start_step, min_level)
+end
+
+function Base.show(io::IO, lg::WandbLogger)
+    str = "WandbLogger(\"$(lg.wrun.project)\", \"$(lg.wrun.name)\", "*
+          "id=$(lg.wrun.id), min_level=$(lg.min_level), "*
+           "current_step=$(lg.global_step))"
+    Base.print(io, str)
+    Base.printstyled(io, " @ $(lg.wrun.url)", color = :yellow)
 end
 
 increment_step!(lg::WandbLogger, Δ_Step) = lg.global_step += Δ_Step
@@ -98,6 +106,36 @@ precision_recall(
     y_probs::AbstractVector,
     labels::AbstractVector,
 ) = wandb.plots.precision_recall(y_test, y_probs, labels)
+
+
+# Wandb Artifacts
+mutable struct WandbArtifact
+    artifact::PyObject
+end
+
+WandbArtifact(args...; kwargs...) =
+    WandbArtifact(wandb.Artifact(args...; kwargs...))
+
+Base.show(io::IO, ::WandbArtifact) = Base.print(io, "WandbArtifact()")
+
+for func in (:download, :get, :finalize, :wait)
+    @eval begin
+        $(func)(wa::WandbArtifact, args...; kwargs...) =
+            wa.artifact.$(func)(args...; kwargs...)
+    end
+end
+
+for func in (:add, :add_file, :add_dir, :add_reference, :checkout, :delete,
+             :get_added_local_path_name, :get_path, :logged_by, :new_file,
+             :used_by, :verify, :save)
+    @eval begin
+        $(func)(wa::WandbArtifact, args...; kwargs...) =
+            wa.artifact.$(func)(args...; kwargs...)
+    end
+end
+
+
+Base.log(::WandbLogger, wa::WandbArtifact) = wandb.log_artifact(wa.artifact)
 
 
 # AbstractLogger interface
@@ -184,15 +222,6 @@ function CoreLogging.handle_message(
 end
 
 
-function Base.show(io::IO, lg::WandbLogger)
-    str = "WandbLogger(\"$(lg.wrun.project)\", \"$(lg.wrun.name)\", "*
-          "id=$(lg.wrun.id), min_level=$(lg.min_level), "*
-           "current_step=$(lg.global_step))"
-    Base.print(io, str)
-    Base.printstyled(io, " @ $(lg.wrun.url)", color = :yellow)
-end
-
-
-export WandbLogger, update_config!, get_config, save
+export WandbLogger, WandbArtifact, update_config!, get_config, save
 
 end
