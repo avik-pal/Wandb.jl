@@ -10,7 +10,7 @@ Base.show(io::IO, ::WandbArtifact) = Base.print(io, "WandbArtifact()")
 
 for func in (:download, :get, :finalize, :wait)
     @eval begin
-        $(func)(wa::WandbArtifact, args...; kwargs...) =
+        Base.$(func)(wa::WandbArtifact, args...; kwargs...) =
             wa.artifact.$(func)(args...; kwargs...)
     end
 end

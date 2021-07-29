@@ -1,6 +1,6 @@
 module Wandb
 
-using PyCall, Conda, Requires
+using PyCall, Conda, Random, Requires
 
 const wandb = PyNULL()
 
@@ -23,15 +23,17 @@ using Base.CoreLogging:
     min_enabled_level,
     catch_exceptions
 
-    
+
 # Base functions like `log`, `Image`, etc.
 include("main.jl")
 # Wandb Artifacts API
 include("artifacts.jl")
 # AbstractLogger interface
 include("corelogging.jl")
+# HyperParameter Tuning: Sweep/Agent API
+include("sweep.jl")
 
 
-export WandbLogger, WandbArtifact, update_config!, get_config, save
+export WandbLogger, WandbArtifact, WandbHyperParameterSweep, update_config!, get_config, save
 
 end
