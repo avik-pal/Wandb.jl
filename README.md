@@ -259,6 +259,7 @@ f(x, a, b; c) =
     sum(@. x + (a - 3) ^ 2 + (b ? 10 : 20) + (c - 100) ^ 2) # Function to minimize
 
 # This function dispatch must be present
+# `lg` can be `WandbBackend` if using that with HyperParameter Sweep
 function f(lg::WandbLogger, config::Dict)
     res = f(config["x"], config["a"], config["b"]; c = config["c"])
     log(lg, Dict("result" => res))

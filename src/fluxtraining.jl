@@ -14,6 +14,20 @@ function Base.show(io::IO, backend::WandbBackend)
     print(io, ")")
 end
 
+for func in (:log, :close)
+    @eval begin
+        Base.$(func)(wa::WandbBackend, args...; kwargs...) =
+            $(func)(wa.logger, args...; kwargs...)
+    end
+end
+
+for func in (:update_config!, :finish, :save, :get_config)
+    @eval begin
+        $(func)(wa::WandbBackend, args...; kwargs...) =
+            $(func)(wa.logger, args...; kwargs...)
+    end
+end
+
 
 function FluxTraining.log_to(
     backend::WandbBackend,
@@ -90,13 +104,6 @@ function FluxTraining.log_to(
         )
     end
 end
-
-
-save(backend::WandbBackend, file::String; kwargs...) =
-    save(backend.logger, file; kwargs...)
-
-
-Base.close(backend::WandbBackend) = close(backend.logger)
 
 
 export WandbBackend
