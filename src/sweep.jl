@@ -25,12 +25,14 @@ end
 function (hpsweep::WandbHyperParameterSweep)(
     func,
     config,
+    # For Compat with FluxTraining and other Integrations
+    logger = WandbLogger,
     args...;
     func_args = (),
     func_kwargs = (;),
     kwargs...,
 )
-    lg = WandbLogger(
+    lg = logger(
         args...;
         tags = [hpsweep.sweep_tag],
         kwargs...,
