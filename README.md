@@ -381,6 +381,10 @@ using PyCall
 run(`$(PyCall.pyprogramname) -m pip install pillow`)
 ```
 
+4. Wandb init freezes on Windows
+
+Update `wandb.init` with the following kwarg, `wandb.init(..., settings = Wandb.wandb.Settings(start_method="thread"))`
+
 ---
 
 ## TODO
