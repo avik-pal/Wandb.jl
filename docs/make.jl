@@ -3,7 +3,6 @@ using Documenter
 makedocs(
     sitename = "Wandb",
     authors = "Avik Pal",
-    push_preview = true,
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
     ),
@@ -23,5 +22,6 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/avik-pal/Wandb.jl.git"
+    repo = "github.com/avik-pal/Wandb.jl.git",
+    push_preview = true,
 )
