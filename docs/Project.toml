@@ -1,7 +1,11 @@
 [deps]
 <<<<<<< HEAD
+<<<<<<< HEAD
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 =======
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Wandb = "ad70616a-06c9-5745-b1f1-6a5f42545108"
 >>>>>>> ba591a5 (Merge)
+=======
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+>>>>>>> 3379038 (No need to install for docs)

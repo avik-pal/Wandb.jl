@@ -1,12 +1,15 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 using Documenter
 
 makedocs(
 =======
 using Documenter, Wandb
+=======
+using Documenter
+>>>>>>> 3379038 (No need to install for docs)
 
 makedocs(
-    modules = [Wandb],
     doctest = true,
 >>>>>>> ba591a5 (Merge)
     sitename = "Wandb",
