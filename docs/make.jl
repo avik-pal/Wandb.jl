@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 using Documenter
 
 makedocs(
+=======
+using Documenter, Wandb
+
+makedocs(
+    modules = [Wandb],
+    doctest = true,
+>>>>>>> ba591a5 (Merge)
     sitename = "Wandb",
     authors = "Avik Pal",
     format = Documenter.HTML(
