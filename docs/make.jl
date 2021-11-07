@@ -1,8 +1,6 @@
-using Documenter, Wandb
+using Documenter
 
 makedocs(
-    modules = [Wandb],
-    doctest = true,
     sitename = "Wandb",
     authors = "Avik Pal",
     format = Documenter.HTML(
