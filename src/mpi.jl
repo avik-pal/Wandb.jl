@@ -45,7 +45,7 @@ for func in (:log, :close)
     end
 end
 
-for func in (:increment_step!, finish, save)
+for func in (:increment_step!, :finish, :save)
     @eval begin
         $(func)(wa::WandbLoggerMPI, args...; kwargs...) =
             $(func)(wa.logger, args...; kwargs...)
