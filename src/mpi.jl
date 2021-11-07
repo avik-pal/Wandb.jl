@@ -6,7 +6,7 @@ mutable struct WandbLoggerMPI{L<:Union{Nothing,WandbLogger},C}
 end
 
 Base.getproperty(wl::WandbLoggerMPI, id::Symbol) =
-    hasfield(wl, id) ? getfield(wl, id) : getproperty(wl.logger, id)
+    hasfield(typeof(wl), id) ? getfield(wl, id) : getproperty(wl.logger, id)
 
 function WandbLoggerMPI(args...; kwargs...)
     comm = MPI.COMM_WORLD
