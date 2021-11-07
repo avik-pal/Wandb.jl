@@ -24,4 +24,5 @@ makedocs(
 deploydocs(
     repo = "github.com/avik-pal/Wandb.jl.git",
     push_preview = true,
+    devbranch = "main",
 )
