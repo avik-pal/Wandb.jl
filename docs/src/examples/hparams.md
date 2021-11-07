@@ -4,7 +4,6 @@ We currently don't support Wandb Agents API since it leads to segfaults. Instead
 to install `Hyperopt.jl` or any other HyperParameter Optimization Library. The resultant Wandb logs
 aren't as neat as the official sweeps but do get the job done.
 
-
 ```julia
 using Hyperopt
 using Wandb

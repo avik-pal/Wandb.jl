@@ -5,7 +5,8 @@ mutable struct WandbLoggerMPI{L<:Union{Nothing,WandbLogger},C}
     config::C
 end
 
-Base.getproperty(wl::WandbLoggerMPI, id) = hasfield(wl, id) ? getfield(wl, id) : getproperty(wl.logger, id)
+Base.getproperty(wl::WandbLoggerMPI, id::Symbol) =
+    hasfield(wl, id) ? getfield(wl, id) : getproperty(wl.logger, id)
 
 function WandbLoggerMPI(args...; kwargs...)
     comm = MPI.COMM_WORLD
@@ -16,7 +17,10 @@ function WandbLoggerMPI(args...; kwargs...)
         if size == 1
             return WandbLogger(args...; kwargs...)
         else
-            return WandbLoggerMPI(WandbLogger(args...; kwargs...), get(kwargs, :config, Dict()))
+            return WandbLoggerMPI(
+                WandbLogger(args...; kwargs...),
+                get(kwargs, :config, Dict()),
+            )
         end
     else
         return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
@@ -39,9 +43,8 @@ for func in (:log, :close)
     @eval begin
         Base.$(func)(wa::WandbLoggerMPI, args...; kwargs...) =
             $(func)(wa.logger, args...; kwargs...)
-        
-        Base.$(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) =
-            nothing
+
+        Base.$(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
     end
 end
 
@@ -49,9 +52,8 @@ for func in (:increment_step!, :finish, :save)
     @eval begin
         $(func)(wa::WandbLoggerMPI, args...; kwargs...) =
             $(func)(wa.logger, args...; kwargs...)
-        
-        $(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) =
-            nothing
+
+        $(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
     end
 end
 
