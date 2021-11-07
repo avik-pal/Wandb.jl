@@ -38,4 +38,4 @@ After this is done, we need to do some manual tweaking in the Wandb UI to get a 
 visualization. First, filter the runs using the tag in `hpsweep`. Then just add a
 `Parallel Coordinates` plot with the hyperparameters.
 
-<img src="https://i.imgur.com/89RtziT.png" alt="Parallel Coordinates Plot">
+![Parallel Coordinates Plot](https://i.imgur.com/89RtziT.png)

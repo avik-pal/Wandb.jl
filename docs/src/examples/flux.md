@@ -1,6 +1,6 @@
 # Integration with Flux.jl
 
-Using `Wandb.jl` in existing Flux workflows is pretty easy. Let's go through the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mlp_mnist/mlp_mnist.jl">mlp_mnist</a> demo in Flux model-zoo and update it to use Wandb. Firstly, use <a href="https://github.com/FluxML/model-zoo/tree/master/vision/mlp_mnist">this environment</a> and add `Wandb.jl` to it.
+Using `Wandb.jl` in existing Flux workflows is pretty easy. Let's go through the [mp_mnist](https://github.com/FluxML/model-zoo/blob/master/vision/mlp_mnist/mlp_mnist.jl) demo in Flux model-zoo and update it to use Wandb. Firstly, use [this evironment](https://github.com/FluxML/model-zoo/tree/master/vision/mlp_mnist) and add `Wandb.jl` to it.
 
 ```julia
 using Flux, Statistics

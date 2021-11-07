@@ -1,6 +1,6 @@
 # Getting Started Tutorial
 
-Example borrowed from <a href="https://colab.research.google.com/drive/1aEv8Haa3ppfClcCiC2TB8WLHB4jnY_Ds#scrollTo=-VE3MabfZAcx">here</a>.
+Example borrowed from [here](https://colab.research.google.com/drive/1aEv8Haa3ppfClcCiC2TB8WLHB4jnY_Ds#scrollTo=-VE3MabfZAcx)
 
 ```julia
 using Wandb, Dates, Logging
