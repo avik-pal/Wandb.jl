@@ -3,6 +3,7 @@ using Documenter
 makedocs(
     sitename = "Wandb",
     authors = "Avik Pal",
+    push_preview = true,
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
     ),
