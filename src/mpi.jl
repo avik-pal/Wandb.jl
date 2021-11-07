@@ -16,10 +16,10 @@ function WandbLoggerMPI(args...; kwargs...)
         if size == 1
             return WandbLogger(args...; kwargs...)
         else
-            return WandbLoggerMPI(WandbLogger(args...; kwargs...), get(kwargs, "config", Dict()))
+            return WandbLoggerMPI(WandbLogger(args...; kwargs...), get(kwargs, :config, Dict()))
         end
     else
-        return WandbLoggerMPI(nothing, get(kwargs, "config", Dict()))
+        return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
     end
 end
 
