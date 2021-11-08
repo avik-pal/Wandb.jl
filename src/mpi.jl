@@ -39,6 +39,9 @@ function update_config!(lg::WandbLoggerMPI, dict::Dict; kwargs...)
     error("Updating Config when using MPI is not yet supported")
 end
 
+get_config(lg::WandbLoggerMPI, key::String) = get(lg.config, key)
+get_config(lg::WandbLoggerMPI) = lg.config
+
 for func in (:log, :close)
     @eval begin
         Base.$(func)(wa::WandbLoggerMPI, args...; kwargs...) =
