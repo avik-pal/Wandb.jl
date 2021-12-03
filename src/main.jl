@@ -15,7 +15,18 @@ function WandbLogger(;
     start_step = 0,
     kwargs...,
 )
-    wrun = wandb.init(; project = project, name = name, kwargs...)
+    wrun = nothing
+    @static if Sys.iswindows()
+        if :settings in keys(kwargs)
+            wrun = wandb.init(; project = project, name = name, kwargs...)
+        else
+            wrun = wandb.init(; project = project, name = name,
+                                settings = wandb.Settings(start_method="thread"),
+                                kwargs...)
+        end
+    else
+        wrun = wandb.init(; project = project, name = name, kwargs...)
+    end
     if !isnothing(name) && wrun.name != name
         @warn "There is an ongoing wandb run. Please `close` the run before initializing a new one."
     end
