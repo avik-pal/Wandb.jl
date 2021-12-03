@@ -8,22 +8,30 @@ end
 Base.getproperty(wl::WandbLoggerMPI, id::Symbol) =
     hasfield(typeof(wl), id) ? getfield(wl, id) : getproperty(wl.logger, id)
 
-function WandbLoggerMPI(args...; kwargs...)
+function WandbLoggerMPI(args...; name::Union{Nothing,String} = nothing,
+                        group::Union{Nothing,String} = nothing, kwargs...)
     comm = MPI.COMM_WORLD
     rank = MPI.Comm_rank(comm)
     size = MPI.Comm_size(comm)
 
-    if rank == 0
-        if size == 1
-            return WandbLogger(args...; kwargs...)
+    if isnothing(group)
+        if rank == 0
+            if size == 1
+                return WandbLogger(args...; name = name, kwargs...)
+            else
+                return WandbLoggerMPI(
+                    WandbLogger(args...; name = name, kwargs...),
+                    get(kwargs, :config, Dict()),
+                )
+            end
         else
-            return WandbLoggerMPI(
-                WandbLogger(args...; kwargs...),
-                get(kwargs, :config, Dict()),
-            )
+            return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
         end
     else
-        return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
+        if !isnothing(name)
+            name = name * "_rank_$rank"
+        end
+        return WandbLogger(args...; name = name, group = group, kwargs...)
     end
 end
 
