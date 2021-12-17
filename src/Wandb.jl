@@ -8,25 +8,23 @@ function __init__()
     copy!(wandb, pyimport("wandb"))
     @info "Using Wandb version $(wandb.__version__)"
 
-    @require FluxTraining="7bf95e4d-ca32-48da-9824-f0dc5310474f" begin
+    msg = Wandb.wandb.sdk.internal.update.check_available(wandb.__version__)
+    if msg !== nothing
+        @info "Trying to update Wandb to the latest stable release"
+        run(`$(PyCall.pyprogramname) -m pip install wandb --upgrade`)
+    end
+
+    @require FluxTraining = "7bf95e4d-ca32-48da-9824-f0dc5310474f" begin
         include("fluxtraining.jl")
     end
 
-    @require MPI="da04e1cc-30fd-572f-bb4f-1f8673147195" begin
+    @require MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195" begin
         include("mpi.jl")
     end
 end
 
-using Base.CoreLogging:
-    CoreLogging,
-    AbstractLogger,
-    LogLevel,
-    Info,
-    handle_message,
-    shouldlog,
-    min_enabled_level,
-    catch_exceptions
-
+using Base.CoreLogging: CoreLogging, AbstractLogger, LogLevel, Info, handle_message, shouldlog, min_enabled_level,
+                        catch_exceptions
 
 # Base functions like `log`, `Image`, etc.
 include("main.jl")
@@ -36,7 +34,6 @@ include("artifacts.jl")
 include("corelogging.jl")
 # HyperParameter Tuning: Sweep/Agent API
 include("sweep.jl")
-
 
 export WandbLogger, WandbArtifact, WandbHyperParameterSweep, update_config!, get_config, save
 

@@ -4,7 +4,6 @@
 #     return wandb.sweep(sweep_config, entity, project)
 # end
 
-
 # function agent(
 #     sweep_id;
 #     func = nothing,
@@ -21,25 +20,13 @@ end
 
 WandbHyperParameterSweep() = WandbHyperParameterSweep(randstring(12))
 
-
-function (hpsweep::WandbHyperParameterSweep)(
-    func,
-    config,
-    # For Compat with FluxTraining and other Integrations
-    logger = WandbLogger,
-    args...;
-    func_args = (),
-    func_kwargs = (;),
-    kwargs...,
-)
-    lg = logger(
-        args...;
-        tags = [hpsweep.sweep_tag],
-        kwargs...,
-    )
+function (hpsweep::WandbHyperParameterSweep)(func, config,
+                                             # For Compat with FluxTraining and other Integrations
+                                             logger=WandbLogger, args...; func_args=(), func_kwargs=(;), kwargs...)
+    lg = logger(args...; tags=[hpsweep.sweep_tag], kwargs...)
 
     try
-        @info "Logging to Wandb" logger=lg
+        @info "Logging to Wandb" logger = lg
 
         # The user can pass other global configuration options to the sweep
         update_config!(lg, config)

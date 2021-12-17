@@ -48,6 +48,8 @@ The main points when using MPI and Wandb are:
 
 1. `MPI.Init()` must be called before `WandbLoggerMPI` is called.
 2. The `config` cannot be updated after `WandbLoggerMPI` is initialized, i.e. `update_config!` won't work.
-3. All the logging is done by the process with `rank = 0`. We hope to have better synchronization in the future.
+3. Logging is done the following manner:
+   1. If `group` kwarg is not passed/ is `nothing`: All the logging is done by the process with `rank = 0`.
+   2. If `group` is set to a string: Look at https://docs.wandb.ai/guides/track/advanced/grouping for more details. (The rank of the processes are appended to the `name` if set)
 
 The code should be run using `mpiexecjl -n 3 julia <script>.jl`.
