@@ -7,7 +7,6 @@ CoreLogging.min_enabled_level(lg::WandbLogger) = lg.min_level
 # For now, log everything that is above the lg.min_level
 CoreLogging.shouldlog(lg::WandbLogger, level, _module, group, id) = true
 
-
 function preprocess(name, val::T, data) where {T}
     if isstructtype(T) && !(val isa PyObject)
         fn = logable_propertynames(val)
@@ -18,7 +17,7 @@ function preprocess(name, val::T, data) where {T}
     else
         push!(data, name => val)
     end
-    data
+    return data
 end
 
 """
@@ -31,7 +30,6 @@ See also: [`Base.propertynames`](@ref)
 """
 logable_propertynames(val::Any) = propertynames(val)
 
-
 ## Default unpacking of key-value dictionaries
 function preprocess(name, dict::AbstractDict, data)
     for (key, val) in dict
@@ -42,24 +40,11 @@ function preprocess(name, dict::AbstractDict, data)
 end
 
 # Split complex numbers into real/complex pairs
-preprocess(name, val::Complex, data) =
-    push!(data, name * "/re" => real(val), name * "/im" => imag(val))
+preprocess(name, val::Complex, data) = push!(data, name * "/re" => real(val), name * "/im" => imag(val))
 
-process(lg::WandbLogger, name::AbstractString, obj, step::Int) =
-    log(lg, Dict(name => obj); step = step)
+process(lg::WandbLogger, name::AbstractString, obj, step::Int) = log(lg, Dict(name => obj); step=step)
 
-
-function CoreLogging.handle_message(
-    lg::WandbLogger,
-    level,
-    message,
-    _module,
-    group,
-    id,
-    file,
-    line;
-    kwargs...,
-)
+function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id, file, line; kwargs...)
     i_step = lg.step_increment # :log_step_increment default value
 
     if !isempty(kwargs)
