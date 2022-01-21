@@ -1,6 +1,6 @@
-using FluxTraining
+using .FluxTraining
 
-import FluxTraining: Loggables, _combinename, cpu
+import .FluxTraining: Loggables, _combinename, cpu
 
 struct WandbBackend <: FluxTraining.LoggerBackend
     logger::WandbLogger
