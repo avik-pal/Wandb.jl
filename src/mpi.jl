@@ -1,4 +1,4 @@
-using MPI
+using .MPI
 
 mutable struct WandbLoggerMPI{L<:Union{Nothing,WandbLogger},C}
     logger::L
