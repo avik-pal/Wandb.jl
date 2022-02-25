@@ -35,9 +35,7 @@ end
 increment_step!(lg::WandbLogger, Δ_Step) = lg.global_step += Δ_Step
 
 # https://docs.wandb.ai/guides/track/log
-# Probably shouldn't do this but want to stay consistent with the
-# Wandb API
-Base.log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(logs; kwargs...)
+log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(logs; kwargs...)
 
 # https://docs.wandb.ai/guides/track/config
 update_config!(lg::WandbLogger, dict::Dict; kwargs...) = lg.wrun.config.update(dict; kwargs...)
