@@ -15,9 +15,14 @@ To install simply do the following in a Julia REPL
 
 ## Changelog
 
-### v0.4.2
+### v0.4.3
 
 * `Wandb.Image` now supports any object with a `show(::IO, ::MIME"image/png", img)` (or `image/jpeg`) method.
+
+### v0.4.2
+
+* `version()` returns a `VersionNumber` instead of a `String`
+* `update_client()` needs to be called to update the wandb client. We no longer check for updates by default.
 
 ### v0.4.1
 

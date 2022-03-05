@@ -90,4 +90,21 @@ end
 
 Return the Wandb python client version number (i.e., `Wandb.wandb.__version__`).
 """
-version() = wandb.__version__
+version() = VersionNumber(map(Base.Fix1(parse, UInt32), split(wandb.__version__, "."))...)
+
+
+"""
+    update_client()
+
+Updates the wandb client
+"""
+function update_client()
+    msg = Wandb.wandb.sdk.internal.update.check_available(wandb.__version__)
+    if msg !== nothing
+        @info "Trying to update Wandb to the latest stable release"
+        run(`$(PyCall.pyprogramname) -m pip install wandb --upgrade`)
+        @info "Please restart Julia session to use the updated release"
+    else
+        @info "No new version of Wandb Client found"
+    end
+end
