@@ -6,11 +6,6 @@ const wandb = PyNULL()
 
 function __init__()
     copy!(wandb, pyimport("wandb"))
-    msg = Wandb.wandb.sdk.internal.update.check_available(wandb.__version__)
-    if msg !== nothing
-        @info "Trying to update Wandb to the latest stable release"
-        run(`$(PyCall.pyprogramname) -m pip install wandb --upgrade`)
-    end
 
     @require FluxTraining = "7bf95e4d-ca32-48da-9824-f0dc5310474f" begin
         include("fluxtraining.jl")

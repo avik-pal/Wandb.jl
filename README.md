@@ -15,6 +15,11 @@ To install simply do the following in a Julia REPL
 
 ## Changelog
 
+### v0.4.2
+
+* `version()` returns a `VersionNumber` instead of a `String`
+* `update_client()` needs to be called to update the wandb client. We no longer check for updates by default.
+
 ### v0.4.1
 
 * The Wandb python client version number is no longer printed during `__init__` (i.e. when calling `using Wandb`). Instead, call `Wandb.version()` to see the client version number.
