@@ -59,6 +59,19 @@ get_config(lg::WandbLogger, key::String) = get(lg.wrun.config, key)
 Image(img::AbstractArray{T,3}; kwargs...) where {T} = wandb.Image(permutedims(img, (3, 1, 2)); kwargs...)
 Image(img::AbstractMatrix; kwargs...) = wandb.Image(img; kwargs...)
 Image(img::String; kwargs...) = wandb.Image(img; kwargs...)
+function Image(img::Any; kwargs...)
+    mime_pairs = ((MIME"image/png"(), "png"), (MIME"image/jpeg"(), "jpg"))
+    for (mime, ext) in mime_pairs
+        showable(mime, img) || continue
+        path = joinpath(mktempdir(), "img.$ext") # cleaned up on Julia process exit
+        open(path; write=true) do io
+            show(io, mime, img)
+        end
+        return wandb.Image(path; kwargs...)
+    end
+    error("Could not `show` `img` as any of $(first.(mime_pairs))")
+end
+
 
 Video(vid::AbstractArray{T,4}; kwargs...) where {T} = wandb.Video(permutedims(vid, (4, 3, 2, 1)); kwargs...)
 Video(vid::AbstractArray{T,3}; kwargs...) where {T} = wandb.Video(permutedims(vid, (3, 2, 1)); kwargs...)

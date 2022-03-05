@@ -1,7 +1,7 @@
 name = "Wandb"
 uuid = "ad70616a-06c9-5745-b1f1-6a5f42545108"
 authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
@@ -12,5 +12,13 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 [compat]
 Conda = "1.5"
 PyCall = "1.92"
+PlotlyJS = "v0.18.8"
 Requires = "1.1"
 julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
+
+[targets]
+test = ["Test", "PlotlyJS"]

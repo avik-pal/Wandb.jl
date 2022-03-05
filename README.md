@@ -15,6 +15,10 @@ To install simply do the following in a Julia REPL
 
 ## Changelog
 
+### v0.4.2
+
+* `Wandb.Image` now supports any object with a `show(::IO, ::MIME"image/png", img)` (or `image/jpeg`) method.
+
 ### v0.4.1
 
 * The Wandb python client version number is no longer printed during `__init__` (i.e. when calling `using Wandb`). Instead, call `Wandb.version()` to see the client version number.
