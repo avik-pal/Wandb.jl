@@ -21,4 +21,4 @@ for func in
     end
 end
 
-Base.log(::WandbLogger, wa::WandbArtifact) = wandb.log_artifact(wa.artifact)
+log(::WandbLogger, wa::WandbArtifact) = wandb.log_artifact(wa.artifact)
