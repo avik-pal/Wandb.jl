@@ -75,6 +75,6 @@ end
 """
     version()
 
-Return the Wandb client version (i.e., `Wandb.wandb.__version__`).
+Return the Wandb python client version number (i.e., `Wandb.wandb.__version__`).
 """
 version() = wandb.__version__
