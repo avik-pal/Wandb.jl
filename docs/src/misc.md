@@ -27,6 +27,8 @@ Most of the wandb API should be usable through `Wandb.wandb`. In case something 
 
 ## Troubleshooting
 
+Note: you can check the version of the Wandb python client by calling `Wandb.version()`.
+
 1. `Wandb.jl` crashed Julia :( / Long error messages but stuff works :O
 
 It is possible that when creating the first logger instance `wandb` crashes julia or throws a verbose error
