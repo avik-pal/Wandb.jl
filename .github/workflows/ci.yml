@@ -10,7 +10,9 @@ on:
       - main
 
 jobs:
-  build:
+  test:
+    env:
+      PYTHON: ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
