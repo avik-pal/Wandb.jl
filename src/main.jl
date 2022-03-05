@@ -69,7 +69,7 @@ function Image(img::Any; kwargs...)
         end
         return wandb.Image(path; kwargs...)
     end
-    error("Could not `show` `img` as any of $(first.(mime_pairs))")
+    error("Fallback image conversion failed: could not `show` image of type `$(typeof(img))` as any of $(first.(mime_pairs))")
 end
 
 
