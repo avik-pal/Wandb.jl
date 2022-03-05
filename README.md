@@ -15,6 +15,10 @@ To install simply do the following in a Julia REPL
 
 ## Changelog
 
+### v0.4.1
+
+* The Wandb python client version number is no longer printed during `__init__` (i.e. when calling `using Wandb`). Instead, call `Wandb.version()` to see the client version number.
+
 ### v0.4.0
 
 * `Base.log` is no longer exported. Users need to do `Wandb.log` (https://github.com/avik-pal/Wandb.jl/issues/9)

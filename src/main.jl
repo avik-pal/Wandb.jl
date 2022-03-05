@@ -71,3 +71,10 @@ Object3D(path::String) = wandb.Object3D(open(path, 'r'))
 function precision_recall(y_test::AbstractVector, y_probs::AbstractVector, labels::AbstractVector)
     return wandb.plots.precision_recall(y_test, y_probs, labels)
 end
+
+"""
+    version()
+
+Return the Wandb python client version number (i.e., `Wandb.wandb.__version__`).
+"""
+version() = wandb.__version__

@@ -6,8 +6,6 @@ const wandb = PyNULL()
 
 function __init__()
     copy!(wandb, pyimport("wandb"))
-    @info "Using Wandb version $(wandb.__version__)"
-
     msg = Wandb.wandb.sdk.internal.update.check_available(wandb.__version__)
     if msg !== nothing
         @info "Trying to update Wandb to the latest stable release"
