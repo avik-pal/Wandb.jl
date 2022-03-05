@@ -83,7 +83,7 @@ version() = VersionNumber(map(Base.Fix1(parse, UInt32), split(wandb.__version__,
 """
     update_client()
 
-
+Updates the wandb client
 """
 function update_client()
     msg = Wandb.wandb.sdk.internal.update.check_available(wandb.__version__)
