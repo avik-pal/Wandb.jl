@@ -17,3 +17,9 @@ catch e
               "- Or install the dependencies by running `pip` - `pip install wandb>=0.11`"
     end
 end
+
+try
+    pyimport_conda("PIL", "pillow")
+catch e
+    @warn "PIL from `pillow` could not be installed; `Wandb.Image` may not work correctly."
+end
