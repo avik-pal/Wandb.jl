@@ -14,13 +14,9 @@ function Base.show(io::IO, backend::WandbBackend)
     return print(io, ")")
 end
 
-for func in (:log, :close)
-    @eval begin
-        Base.$(func)(wa::WandbBackend, args...; kwargs...) = $(func)(wa.logger, args...; kwargs...)
-    end
-end
+Base.close(wa::WandbBackend, args...; kwargs...) = close(wa.logger, args...; kwargs...)
 
-for func in (:update_config!, :finish, :save, :get_config)
+for func in (:log, :update_config!, :finish, :save, :get_config)
     @eval begin
         $(func)(wa::WandbBackend, args...; kwargs...) = $(func)(wa.logger, args...; kwargs...)
     end
