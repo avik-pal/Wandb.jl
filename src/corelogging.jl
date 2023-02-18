@@ -22,6 +22,7 @@ end
 
 """
     logable_propertynames(val::Any)
+
 Returns a tuple with the name of the fields of the structure `val` that
 should be logged to Wandb. This function should be overridden when
 you want Wandb to ignore some fields in a structure when logging
@@ -40,15 +41,20 @@ function preprocess(name, dict::AbstractDict, data)
 end
 
 # Split complex numbers into real/complex pairs
-preprocess(name, val::Complex, data) = push!(data, name * "/re" => real(val), name * "/im" => imag(val))
+function preprocess(name, val::Complex, data)
+    return push!(data, name * "/re" => real(val), name * "/im" => imag(val))
+end
 
-process(lg::WandbLogger, name::AbstractString, obj, step::Int) = log(lg, Dict(name => obj); step=step)
+function process(lg::WandbLogger, name::AbstractString, obj, step::Int)
+    return log(lg, Dict(name => obj); step=step)
+end
 
-function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id, file, line; kwargs...)
+function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id,
+                                    file, line; kwargs...)
     i_step = lg.step_increment # :log_step_increment default value
 
     if !isempty(kwargs)
-        data = Vector{Pair{String,Any}}()
+        data = Vector{Pair{String, Any}}()
         # ∀ (k-v) pairs, decompose values into objects that can be serialized
         for (key, val) in pairs(kwargs)
             # special key describing step increment

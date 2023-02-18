@@ -17,12 +17,13 @@ end
 Base.close(wa::WandbBackend, args...; kwargs...) = close(wa.logger, args...; kwargs...)
 
 for func in (:log, :update_config!, :finish, :save, :get_config)
-    @eval begin
-        $(func)(wa::WandbBackend, args...; kwargs...) = $(func)(wa.logger, args...; kwargs...)
-    end
+    @eval begin function $(func)(wa::WandbBackend, args...; kwargs...)
+        return $(func)(wa.logger, args...; kwargs...)
+    end end
 end
 
-function FluxTraining.log_to(backend::WandbBackend, value::Loggables.Value, name, i; group=())
+function FluxTraining.log_to(backend::WandbBackend, value::Loggables.Value, name, i;
+                             group=())
     name = _combinename(name, group)
     if length(group) == 0
         log(backend.logger, Dict(name => cpu(value.data)))
@@ -31,13 +32,15 @@ function FluxTraining.log_to(backend::WandbBackend, value::Loggables.Value, name
     end
 end
 
-function FluxTraining.log_to(backend::WandbBackend, image::Loggables.Image, name, i; group=())
+function FluxTraining.log_to(backend::WandbBackend, image::Loggables.Image, name, i;
+                             group=())
     name = _combinename(name, group)
     imgs = Image.(collect(image.data))
     if length(group) == 0
         log(backend.logger, Dict([name * "_$i" => img for (i, img) in enumerate(imgs)]...))
     else
-        log(backend.logger, Dict([name * "_$i" => img for (i, img) in enumerate(imgs)]..., group[1] => i))
+        log(backend.logger,
+            Dict([name * "_$i" => img for (i, img) in enumerate(imgs)]..., group[1] => i))
     end
 end
 
@@ -50,7 +53,8 @@ function FluxTraining.log_to(backend::WandbBackend, text::Loggables.Text, name, 
     end
 end
 
-function FluxTraining.log_to(backend::WandbBackend, hist::Loggables.Histogram, name, i; group=())
+function FluxTraining.log_to(backend::WandbBackend, hist::Loggables.Histogram, name, i;
+                             group=())
     name = _combinename(name, group)
     if length(group) == 0
         log(backend.logger, Dict(name => Histogram(cpu(hist.data))))

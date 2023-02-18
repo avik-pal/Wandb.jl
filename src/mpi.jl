@@ -1,6 +1,6 @@
 using .MPI
 
-mutable struct WandbLoggerMPI{L<:Union{Nothing,WandbLogger},C}
+mutable struct WandbLoggerMPI{L <: Union{Nothing, WandbLogger}, C}
     logger::L
     config::C
 end
@@ -9,7 +9,8 @@ function Base.getproperty(wl::WandbLoggerMPI, id::Symbol)
     return hasfield(typeof(wl), id) ? getfield(wl, id) : getproperty(wl.logger, id)
 end
 
-function WandbLoggerMPI(args...; name::Union{Nothing,String}=nothing, group::Union{Nothing,String}=nothing, kwargs...)
+function WandbLoggerMPI(args...; name::Union{Nothing, String}=nothing,
+                        group::Union{Nothing, String}=nothing, kwargs...)
     comm = MPI.COMM_WORLD
     rank = MPI.Comm_rank(comm)
     size = MPI.Comm_size(comm)
@@ -19,7 +20,8 @@ function WandbLoggerMPI(args...; name::Union{Nothing,String}=nothing, group::Uni
             if size == 1
                 return WandbLogger(args...; name=name, kwargs...)
             else
-                return WandbLoggerMPI(WandbLogger(args...; name=name, kwargs...), get(kwargs, :config, Dict()))
+                return WandbLoggerMPI(WandbLogger(args...; name=name, kwargs...),
+                                      get(kwargs, :config, Dict()))
             end
         else
             return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
@@ -50,7 +52,9 @@ get_config(lg::WandbLoggerMPI) = lg.config
 
 for func in (:log, :close)
     @eval begin
-        Base.$(func)(wa::WandbLoggerMPI, args...; kwargs...) = $(func)(wa.logger, args...; kwargs...)
+        function Base.$(func)(wa::WandbLoggerMPI, args...; kwargs...)
+            return $(func)(wa.logger, args...; kwargs...)
+        end
 
         Base.$(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
     end
@@ -58,7 +62,9 @@ end
 
 for func in (:increment_step!, :finish, :save)
     @eval begin
-        $(func)(wa::WandbLoggerMPI, args...; kwargs...) = $(func)(wa.logger, args...; kwargs...)
+        function $(func)(wa::WandbLoggerMPI, args...; kwargs...)
+            return $(func)(wa.logger, args...; kwargs...)
+        end
 
         $(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
     end

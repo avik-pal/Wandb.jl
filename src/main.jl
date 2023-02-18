@@ -7,13 +7,15 @@ mutable struct WandbLogger <: AbstractLogger
     min_level::LogLevel
 end
 
-function WandbLogger(; project, name=nothing, min_level=Info, step_increment=1, start_step=0, kwargs...)
+function WandbLogger(; project, name=nothing, min_level=Info, step_increment=1,
+                     start_step=0, kwargs...)
     wrun = nothing
     @static if Sys.iswindows()
         if :settings in keys(kwargs)
             wrun = wandb.init(; project=project, name=name, kwargs...)
         else
-            wrun = wandb.init(; project=project, name=name, settings=wandb.Settings(; start_method="thread"), kwargs...)
+            wrun = wandb.init(; project=project, name=name,
+                              settings=wandb.Settings(; start_method="thread"), kwargs...)
         end
     else
         wrun = wandb.init(; project=project, name=name, kwargs...)
@@ -38,13 +40,15 @@ increment_step!(lg::WandbLogger, Δ_Step) = lg.global_step += Δ_Step
 log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(logs; kwargs...)
 
 # https://docs.wandb.ai/guides/track/config
-update_config!(lg::WandbLogger, dict::Dict; kwargs...) = lg.wrun.config.update(dict; kwargs...)
+function update_config!(lg::WandbLogger, dict::Dict; kwargs...)
+    return lg.wrun.config.update(dict; kwargs...)
+end
 
 # https://docs.wandb.ai/ref/python/finish
 Base.close(lg::WandbLogger; kwargs...) = lg.wrun.finish(; kwargs...)
 
 function finish(lg::WandbLogger; kwargs...)
-    @warn "The desired way to end the run is `close`. Please update your code to use the same" maxlog = 1
+    @warn "The desired way to end the run is `close`. Please update your code to use the same" maxlog=1
     return close(lg; kwargs...)
 end
 
@@ -56,7 +60,9 @@ get_config(lg::WandbLogger, key::String) = get(lg.wrun.config, key)
 
 # Logging Types: Image, Video, Histogram, 3D Objects, PR Curve
 ## We assume the images to be ordered as per Flux conventions
-Image(img::AbstractArray{T,3}; kwargs...) where {T} = wandb.Image(permutedims(img, (3, 1, 2)); kwargs...)
+function Image(img::AbstractArray{T, 3}; kwargs...) where {T}
+    return wandb.Image(permutedims(img, (3, 1, 2)); kwargs...)
+end
 Image(img::AbstractMatrix; kwargs...) = wandb.Image(img; kwargs...)
 Image(img::String; kwargs...) = wandb.Image(img; kwargs...)
 function Image(img::Any; kwargs...)
@@ -65,23 +71,28 @@ function Image(img::Any; kwargs...)
         showable(mime, img) || continue
         path = joinpath(mktempdir(), "img.$ext") # cleaned up on Julia process exit
         open(path; write=true) do io
-            show(io, mime, img)
+            return show(io, mime, img)
         end
         return wandb.Image(path; kwargs...)
     end
     error("Fallback image conversion failed: could not `show` image of type `$(typeof(img))` as any of $(first.(mime_pairs))")
+    return
 end
 
-
-Video(vid::AbstractArray{T,4}; kwargs...) where {T} = wandb.Video(permutedims(vid, (4, 3, 2, 1)); kwargs...)
-Video(vid::AbstractArray{T,3}; kwargs...) where {T} = wandb.Video(permutedims(vid, (3, 2, 1)); kwargs...)
+function Video(vid::AbstractArray{T, 4}; kwargs...) where {T}
+    return wandb.Video(permutedims(vid, (4, 3, 2, 1)); kwargs...)
+end
+function Video(vid::AbstractArray{T, 3}; kwargs...) where {T}
+    return wandb.Video(permutedims(vid, (3, 2, 1)); kwargs...)
+end
 Video(vid::String; kwargs...) = wandb.Video(vid; kwargs...)
 
 Histogram(x::AbstractArray; kwargs...) = wandb.Histogram(x; kwargs...)
 
 Object3D(path::String) = wandb.Object3D(open(path, 'r'))
 
-function precision_recall(y_test::AbstractVector, y_probs::AbstractVector, labels::AbstractVector)
+function precision_recall(y_test::AbstractVector, y_probs::AbstractVector,
+                          labels::AbstractVector)
     return wandb.plots.precision_recall(y_test, y_probs, labels)
 end
 
@@ -91,7 +102,6 @@ end
 Return the Wandb python client version number (i.e., `Wandb.wandb.__version__`).
 """
 version() = VersionNumber(map(Base.Fix1(parse, UInt32), split(wandb.__version__, "."))...)
-
 
 """
     update_client()
