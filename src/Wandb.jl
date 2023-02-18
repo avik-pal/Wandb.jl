@@ -23,20 +23,26 @@ end
 
 # Some Utility Functions
 _to_numpy(x::AbstractArray) = numpy.asarray(x)
+
 _to_list(x) = pylist(x)
 _to_list(x::AbstractMatrix) = pylist(pylist.(eachrow(x)))
 
+_to_dict(x) = x
+_to_dict(x::String) = pystr(x)
+_to_dict(x::AbstractArray) = _to_list(x)
+_to_dict(d::Dict) = pydict(Dict(k => _to_dict(v) for (k, v) in pairs(d)))
+
 # Base functions like `log`, `Image`, etc.
 include("main.jl")
-# # Wandb Artifacts API
-# include("artifacts.jl")
+# Wandb Artifacts API
+include("artifacts.jl")
 # AbstractLogger interface
 include("corelogging.jl")
-# # HyperParameter Tuning: Sweep/Agent API
-# include("sweep.jl")
+# HyperParameter Tuning: Sweep/Agent API
+include("sweep.jl")
 
 export WandbLogger, update_config!, get_config
-# export WandbLogger, WandbArtifact, WandbHyperParameterSweep, update_config!, get_config,
-#        save
+export WandbHyperParameterSweep
+export WandbArtifact
 
 end

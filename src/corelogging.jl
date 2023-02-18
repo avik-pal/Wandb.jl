@@ -8,7 +8,7 @@ CoreLogging.min_enabled_level(lg::WandbLogger) = lg.min_level
 CoreLogging.shouldlog(lg::WandbLogger, level, _module, group, id) = true
 
 function preprocess(name, val::T, data) where {T}
-  if isstructtype(T) && !(val isa PyObject)
+  if isstructtype(T) && !PythonCall.ispy(val)
     fn = logable_propertynames(val)
     for f in fn
       prop = getfield(val, f)
@@ -47,7 +47,7 @@ function preprocess(name, val::Complex, data)
 end
 
 function process(lg::WandbLogger, name::AbstractString, obj, step::Int)
-  return log(lg, Dict(name => obj); step=step)
+  return log(lg, Dict(name => obj); step)
 end
 
 function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id,

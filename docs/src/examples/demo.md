@@ -14,13 +14,13 @@ lg = WandbLogger(project = "Wandb.jl", name = "wandbjl-demo-$(now())",
 global_logger(lg)
 
 # Simulating the training or evaluation loop
-for x ∈ 1:50
-    acc = Wandb.log(1 + x + rand() * get_config(lg, "learning_rate") + rand() +
-                    get_config(lg, "dropout"))
-    loss = 10 - Wandb.log(1 + x + rand() + x * get_config(lg, "learning_rate") + rand() +
-                          get_config(lg, "dropout"))
-    # Log metrics from your script to W&B
-    @info "metrics" accuracy=acc loss=loss
+for x in 1:50
+  acc = log(1 + x + rand() * get_config(lg, "learning_rate") + rand() + 
+            get_config(lg, "dropout"))
+  loss = 10 - log(1 + x + rand() + x * get_config(lg, "learning_rate") + rand() +
+                  get_config(lg, "dropout"))
+  # Log metrics from your script to W&B
+  @info "metrics" accuracy=acc loss=loss
 end
 
 # Finish the run

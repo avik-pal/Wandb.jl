@@ -37,7 +37,7 @@ Wandb.log(lg, Dict("accuracy" => 0.9, "loss" => 0.3))
 update_config!(lg, Dict("dropout" => 0.2))
 
 # Close the logger
-close(lg)  # `finish` works as well but is not a recommended api
+close(lg)
 ```
 
 

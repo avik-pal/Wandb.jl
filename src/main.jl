@@ -7,6 +7,10 @@ mutable struct WandbLogger <: AbstractLogger
   min_level::LogLevel
 end
 
+PythonCall.ispy(::WandbLogger) = true
+
+PythonCall.Py(wa::WandbLogger) = wa.wrun
+
 """
     WandbLogger(; project, name=nothing, min_level=Info, step_increment=1,
                 start_step=0, kwargs...)
@@ -16,17 +20,18 @@ Create a WandbLogger that logs to the wandb project `project`. See the documenta
 `? Wandb.wandb.init`).
 """
 function WandbLogger(; project, name=nothing, min_level=Info, step_increment=1,
-                     start_step=0, kwargs...)
+                     start_step=0, config=Dict(), kwargs...)
   wrun = nothing
+  config = _to_dict(config)
   @static if Sys.iswindows()
     if :settings in keys(kwargs)
-      wrun = wandb.init(; project, name, kwargs...)
+      wrun = wandb.init(; project, name, config, kwargs...)
     else
-      wrun = wandb.init(; project, name, settings=wandb.Settings(; start_method="thread"),
-                        kwargs...)
+      wrun = wandb.init(; project, name, config,
+                        settings=wandb.Settings(; start_method="thread"), kwargs...)
     end
   else
-    wrun = wandb.init(; project, name, kwargs...)
+    wrun = wandb.init(; project, name, config, kwargs...)
   end
   if !isnothing(name) && wrun.name != name
     @warn "There is an ongoing wandb run. Please `close` the run before initializing a
@@ -61,7 +66,7 @@ end
 
 For more details checkout `wandb.log` (or `? Wandb.wandb.log` in the Julia REPL).
 """
-log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(logs; kwargs...)
+log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(_to_dict(logs); kwargs...)
 
 """
     update_config!(lg::WandbLogger, dict::Dict; kwargs...)
@@ -69,7 +74,7 @@ log(lg::WandbLogger, logs::Dict; kwargs...) = lg.wrun.log(logs; kwargs...)
 For more details checkout `wandb.config` (or `? Wandb.wandb.config` in the Julia REPL).
 """
 function update_config!(lg::WandbLogger, dict::Dict; kwargs...)
-  return lg.wrun.config.update(dict; kwargs...)
+  return lg.wrun.config.update(pydict(dict); kwargs...)
 end
 
 """
@@ -100,7 +105,7 @@ get_config(lg::WandbLogger) = lg.wrun.config
 
 Get the value of `key` from the config.
 """
-get_config(lg::WandbLogger, key::String) = lg.wrun.config[key]
+get_config(lg::WandbLogger, key::String) = pyconvert(Any, lg.wrun.config[key])
 
 # Logging Types: Image, Video, Histogram, 3D Objects, PR Curve
 ## We assume the images to be ordered as per (F)Lux conventions
@@ -118,7 +123,9 @@ end
 
 Image(img::AbstractMatrix; kwargs...) = wandb.Image(_to_numpy(img'); kwargs...)
 
-Image(img::Union{String, IO}; kwargs...) = wandb.Image(img; kwargs...)
+Image(img::String; kwargs...) = wandb.Image(img; kwargs...)
+
+Image(img::IO; kwargs...) = wandb.Image(pytextio(img); kwargs...)
 
 function Image(img::Any; kwargs...)
   for (mime, ext) in ((MIME"image/png"(), "png"), (MIME"image/jpeg"(), "jpg"))
@@ -150,7 +157,9 @@ function Video(vid::AbstractArray{T, 4}; kwargs...) where {T}
   return wandb.Video(_to_numpy(permutedims(vid, (4, 3, 2, 1))); kwargs...)
 end
 
-Video(vid::Union{String, IO}; kwargs...) = wandb.Video(vid; kwargs...)
+Video(vid::String; kwargs...) = wandb.Video(vid; kwargs...)
+
+Video(vid::IO; kwargs...) = wandb.Video(pytextio(vid); kwargs...)
 
 """
     Wandb.Histogram(args...; kwargs...)
@@ -167,7 +176,9 @@ Histogram(args...; kwargs...) = wandb.Histogram(args...; kwargs...)
 Creates a `wandb.Object3D` object that can be logged using `Wandb.log`. For more details
 checkout `wandb.Object3D` (or `? Wandb.wandb.Object3D` in the Julia REPL).
 """
-Object3D(path_or_io::Union{String, IO}) = wandb.Object3D(path_or_io)
+Object3D(path::String) = wandb.Object3D(path)
+
+Object3D(io::IO) = wandb.Object3D(pytextio(io))
 
 Object3D(data::AbstractMatrix) = wandb.Object3D(_to_numpy(data))
 

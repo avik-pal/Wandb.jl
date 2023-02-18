@@ -44,6 +44,18 @@ Wandb.Object3D
 Wandb.Table
 ```
 
+## Artifacts
+
+```@docs
+WandbArtifact
+```
+
+## Hyper Parameter Sweep
+
+```@docs
+WandbHyperParameterSweep
+```
+
 ## Index
 
 ```@index
