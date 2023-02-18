@@ -1,11 +1,13 @@
-using Documenter
+using Documenter, Wandb
 
 makedocs(; sitename="Wandb", authors="Avik Pal",
          format=Documenter.HTML(; prettyurls=get(ENV, "CI", nothing) == "true"),
+         modules = [Wandb],
          pages=[
              "Home" => "index.md",
              "QuickStart" => "quickstart.md",
              "Miscellaneous" => "misc.md",
+             "API Reference" => "api.md",
              "Examples" => [
                  "Getting Started" => "examples/demo.md",
                  "Flux.jl Intergration" => "examples/flux.md",

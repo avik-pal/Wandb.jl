@@ -1,24 +1,24 @@
 name = "Wandb"
 uuid = "ad70616a-06c9-5745-b1f1-6a5f42545108"
 authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
-version = "0.4.4"
+version = "0.5.0"
 
 [deps]
-Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
-PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
+PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 
 [compat]
-Conda = "1.5"
-PyCall = "1.92"
+CondaPkg = "0.2"
 PlotlyJS = "v0.18.8"
+PythonCall = "0.9"
 Requires = "1.1"
 julia = "1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "PlotlyJS"]
