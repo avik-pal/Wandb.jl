@@ -8,7 +8,7 @@ makedocs(; sitename="Wandb", authors="Avik Pal",
              "Miscellaneous" => "misc.md",
              "Examples" => [
                  "Getting Started" => "examples/demo.md",
-                 "Flux.jl Intergration" => "examples/flux.md",
+                 "Flux.jl Integration" => "examples/flux.md",
                  "FluxTraining.jl Integration" => "examples/fluxtraining.md",
                  "HyperParameter Sweeps" => "examples/hparams.md",
                  "Artifacts API" => "examples/artifacts.md",
