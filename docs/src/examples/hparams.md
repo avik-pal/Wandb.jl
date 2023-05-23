@@ -29,6 +29,7 @@ ho = @hyperopt for i = 50, sampler = RandomSampler(), # This is default if none 
     hpsweep(f, Dict("a" => a, "b" => b, "c" => c), project = "Wandb.jl",
             config = Dict("x" => 100))
 end
+
 ```
 
 After this is done, we need to do some manual tweaking in the Wandb UI to get a clean

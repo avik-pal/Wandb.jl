@@ -1,7 +1,7 @@
 [deps]
-numpy = ""
-wandb = ">=0.13"
 python = ">=3.9"
 
 [pip.deps]
+numpy = ""
 pillow = ""
+wandb = ">=0.13"
