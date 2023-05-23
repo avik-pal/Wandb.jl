@@ -1,7 +1,5 @@
 [deps]
 numpy = ""
-pillow = ""
 protobuf = "=3"
 python = ">=3.9"
 wandb = ">=0.13"
-
