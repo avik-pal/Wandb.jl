@@ -128,7 +128,8 @@ Image(img::String; kwargs...) = wandb.Image(img; kwargs...)
 Image(img::IO; kwargs...) = wandb.Image(pytextio(img); kwargs...)
 
 function Image(img::Any; kwargs...)
-  for (mime, ext) in ((MIME"image/png"(), "png"), (MIME"image/jpeg"(), "jpg"))
+  mime_pairs = ((MIME"image/png"(), "png"), (MIME"image/jpeg"(), "jpg"))
+  for (mime, ext) in mime_pairs
     showable(mime, img) || continue
     path = joinpath(mktempdir(), "img.$ext") # cleaned up on Julia process exit
     open(path; write=true) do io
