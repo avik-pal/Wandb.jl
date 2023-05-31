@@ -1,6 +1,10 @@
 # Integration with Flux.jl
 
-Using `Wandb.jl` in existing Flux workflows is pretty easy. Let's go through the [mp_mnist](https://github.com/FluxML/model-zoo/blob/master/vision/mlp_mnist/mlp_mnist.jl) demo in Flux model-zoo and update it to use Wandb. Firstly, use [this evironment](https://github.com/FluxML/model-zoo/tree/master/vision/mlp_mnist) and add `Wandb.jl` to it.
+Using `Wandb.jl` in existing Flux workflows is pretty easy. Let's go through the
+[mp_mnist](https://github.com/FluxML/model-zoo/blob/master/vision/mlp_mnist/mlp_mnist.jl)
+demo in Flux model-zoo and update it to use Wandb. Firstly, use
+[this evironment](https://github.com/FluxML/model-zoo/tree/master/vision/mlp_mnist) and add
+`Wandb.jl` to it.
 
 ```julia
 using Flux, Statistics
@@ -11,18 +15,11 @@ using CUDA
 using MLDatasets
 using Wandb
 using Dates
+using Logging
 
-lg = WandbLogger(
-    project = "Wandb.jl",
-    name = "fluxjl-integration-$(now())",
-    config = Dict(
-        "learning_rate" => 3e-4,
-        "batchsize" => 256,
-        "epochs" => 100,
-        "dataset" => "MNIST",
-        "use_cuda" => true,
-    ),
-)
+lg = WandbLogger(project = "Wandb.jl", name = "fluxjl-integration-$(now())",
+                 config = Dict("learning_rate" => 3e-4, "batchsize" => 256,
+                               "epochs" => 100, "dataset" => "MNIST", "use_cuda" => true))
 
 global_logger(lg)
 
@@ -81,7 +78,7 @@ function train(update_params::Dict = Dict())
     #################################
     update_config!(lg, update_params)
 
-    if CUDA.functional() && wandb_get_config("use_cuda")
+    if CUDA.functional() && get_config(lg, "use_cuda")
         @info "Training on CUDA GPU"
         CUDA.allowscalar(false)
         device = gpu
@@ -115,7 +112,7 @@ function train(update_params::Dict = Dict())
         ###################################
         # Wandb # Log the loss and accuracy
         ###################################
-        log(
+        Wandb.log(
             lg,
             Dict(
                 "Training/Loss" => train_loss,

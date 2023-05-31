@@ -13,9 +13,9 @@ using Wandb
 
 lg = WandbLogger(project = "Wandb.jl")
 wa = WandbArtifact("some-dataset", type = "dataset")
-Wandb.add_file("a.txt")
+Wandb.add_file(wa, "a.txt")
 
-log(lg, wa)
+Wandb.log(lg, wa)
 
 close(lg)
 ```
