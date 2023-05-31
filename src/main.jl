@@ -34,7 +34,7 @@ function WandbLogger(; project, name=nothing, min_level=Info, step_increment=1,
     wrun = wandb.init(; project, name, config, kwargs...)
   end
   if !isnothing(name) && wrun.name != name
-    @warn "There is an ongoing wandb run. Please `close` the run before initializing a
+    @warn "There is an ongoing wandb run. Please `close` the run before initializing a \
            new one."
   end
   return WandbLogger(wrun, step_increment, start_step, min_level)

@@ -5,8 +5,7 @@ to install `Hyperopt.jl` or any other HyperParameter Optimization Library. The r
 aren't as neat as the official sweeps but do get the job done.
 
 ```julia
-using Hyperopt
-using Wandb
+using Hyperopt, Wandb
 
 function f(x, a, b; c)
   return sum(@. x + (a - 3) ^ 2 + (b ? 10 : 20) + (c - 100) ^ 2) # Function to minimize
@@ -29,7 +28,6 @@ ho = @hyperopt for i = 50, sampler = RandomSampler(), # This is default if none 
     hpsweep(f, Dict("a" => a, "b" => b, "c" => c), project = "Wandb.jl",
             config = Dict("x" => 100))
 end
-
 ```
 
 After this is done, we need to do some manual tweaking in the Wandb UI to get a clean
