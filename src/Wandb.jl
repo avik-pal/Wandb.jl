@@ -5,18 +5,17 @@ using Random
 using Requires
 
 using Base.CoreLogging: CoreLogging, AbstractLogger, LogLevel, Info, handle_message,
-                        shouldlog, min_enabled_level, catch_exceptions
+  shouldlog, min_enabled_level, catch_exceptions
 
 const wandb = PythonCall.pynew()
 const numpy = PythonCall.pynew()
 
+import PackageExtensionsCompat: @require_extensions
 function __init__()
   PythonCall.pycopy!(wandb, pyimport("wandb"))
   PythonCall.pycopy!(numpy, pyimport("numpy"))
 
-  @require FluxTraining="7bf95e4d-ca32-48da-9824-f0dc5310474f" begin include("fluxtraining.jl") end
-
-  @require MPI="da04e1cc-30fd-572f-bb4f-1f8673147195" begin include("mpi.jl") end
+  @require_extensions
 
   return
 end
@@ -41,8 +40,21 @@ include("corelogging.jl")
 # HyperParameter Tuning: Sweep/Agent API
 include("sweep.jl")
 
+# Defined in Extensions
+mutable struct WandbLoggerMPI{L <: Union{Nothing, WandbLogger}, C}
+  logger::L
+  config::C
+end
+
+struct WandbBackend
+  logger::WandbLogger
+
+  WandbBackend(; kwargs...) = new(WandbLogger(; kwargs...))
+end
+
 export WandbLogger, update_config!, get_config
 export WandbHyperParameterSweep
 export WandbArtifact
+export WandbLoggerMPI, WandbBackend
 
 end

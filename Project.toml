@@ -5,18 +5,30 @@ version = "0.5.1"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
+PackageExtensionCompat = "65ce6f38-6b18-4e1d-a461-8949797d7930"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+
+[weakdeps]
+FluxTraining = "7bf95e4d-ca32-48da-9824-f0dc5310474f"
+MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
+
+[extensions]
+WandbFluxTrainingExt = "FluxTraining"
+WandbMPIExt = "MPI"
 
 [compat]
 CondaPkg = "0.2"
+FluxTraining = "0.3"
+MPI = "0.20"
+PackageExtensionCompat = "1"
 PlotlyJS = "v0.18.8"
 PythonCall = "0.9"
-Requires = "1.1"
 julia = "1"
 
 [extras]
+FluxTraining = "7bf95e4d-ca32-48da-9824-f0dc5310474f"
+MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
