@@ -51,7 +51,7 @@ function process(lg::WandbLogger, name::AbstractString, obj, step::Int)
 end
 
 function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id,
-                                    file, line; kwargs...)
+  file, line; kwargs...)
   i_step = lg.step_increment # :log_step_increment default value
 
   if !isempty(kwargs)
