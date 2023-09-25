@@ -2,15 +2,13 @@ module Wandb
 
 using CondaPkg, PythonCall  # Interface with Python
 using Random
-using Requires
-
 using Base.CoreLogging: CoreLogging, AbstractLogger, LogLevel, Info, handle_message,
   shouldlog, min_enabled_level, catch_exceptions
 
 const wandb = PythonCall.pynew()
 const numpy = PythonCall.pynew()
 
-import PackageExtensionsCompat: @require_extensions
+import PackageExtensionCompat: @require_extensions
 function __init__()
   PythonCall.pycopy!(wandb, pyimport("wandb"))
   PythonCall.pycopy!(numpy, pyimport("numpy"))
