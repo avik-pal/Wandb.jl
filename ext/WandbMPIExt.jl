@@ -1,16 +1,13 @@
-using .MPI
+module WandbMPIExt
 
-mutable struct WandbLoggerMPI{L <: Union{Nothing, WandbLogger}, C}
-  logger::L
-  config::C
-end
+using MPI, Wandb
 
 function Base.getproperty(wl::WandbLoggerMPI, id::Symbol)
   return hasfield(typeof(wl), id) ? getfield(wl, id) : getproperty(wl.logger, id)
 end
 
-function WandbLoggerMPI(args...; name::Union{Nothing, String}=nothing,
-                        group::Union{Nothing, String}=nothing, kwargs...)
+function Wandb.WandbLoggerMPI(args...; name::Union{Nothing, String}=nothing,
+  group::Union{Nothing, String}=nothing, kwargs...)
   comm = MPI.COMM_WORLD
   rank = MPI.Comm_rank(comm)
   size = MPI.Comm_size(comm)
@@ -21,7 +18,7 @@ function WandbLoggerMPI(args...; name::Union{Nothing, String}=nothing,
         return WandbLogger(args...; name=name, kwargs...)
       else
         return WandbLoggerMPI(WandbLogger(args...; name=name, kwargs...),
-                              get(kwargs, :config, Dict()))
+          get(kwargs, :config, Dict()))
       end
     else
       return WandbLoggerMPI(nothing, get(kwargs, :config, Dict()))
@@ -42,13 +39,13 @@ function Base.show(io::IO, wl::WandbLoggerMPI)
   return Base.show(io, wl.logger)
 end
 
-function update_config!(lg::WandbLoggerMPI, dict::Dict; kwargs...)
+function Wandb.update_config!(lg::WandbLoggerMPI, dict::Dict; kwargs...)
   # I forgot why I was throwing this error :'(
   return error("Updating Config when using MPI is not yet supported")
 end
 
-get_config(lg::WandbLoggerMPI, key::String) = get(lg.config, key, nothing)
-get_config(lg::WandbLoggerMPI) = lg.config
+Wandb.get_config(lg::WandbLoggerMPI, key::String) = get(lg.config, key, nothing)
+Wandb.get_config(lg::WandbLoggerMPI) = lg.config
 
 for func in (:log, :close)
   @eval begin
@@ -62,12 +59,12 @@ end
 
 for func in (:increment_step!, :finish, :save)
   @eval begin
-    function $(func)(wa::WandbLoggerMPI, args...; kwargs...)
-      return $(func)(wa.logger, args...; kwargs...)
+    function Wandb.$(func)(wa::WandbLoggerMPI, args...; kwargs...)
+      return Wandb.$(func)(wa.logger, args...; kwargs...)
     end
 
-    $(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
+    Wandb.$(func)(wa::WandbLoggerMPI{Nothing}, args...; kwargs...) = nothing
   end
 end
 
-export WandbLoggerMPI
+end

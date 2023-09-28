@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = Lux
+CurrentModule = Wandb
 ```
 
 # API Reference
@@ -17,6 +17,9 @@ get_config
 Wandb.save
 Wandb.version
 Wandb.update_client
+Wandb.log
+Wandb.logable_propertynames
+Base.close
 ```
 
 ## Plotting

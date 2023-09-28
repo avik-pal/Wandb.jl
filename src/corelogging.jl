@@ -28,7 +28,7 @@ should be logged to Wandb. This function should be overridden when
 you want Wandb to ignore some fields in a structure when logging
 it. The default behaviour is to return the  same result as `propertynames`.
 
-See also: [`Base.propertynames`](@ref)
+See also: [`Base.propertynames`](https://docs.julialang.org/en/v1/base/base/#Base.propertynames)
 """
 logable_propertynames(val::Any) = propertynames(val)
 
@@ -51,7 +51,7 @@ function process(lg::WandbLogger, name::AbstractString, obj, step::Int)
 end
 
 function CoreLogging.handle_message(lg::WandbLogger, level, message, _module, group, id,
-                                    file, line; kwargs...)
+  file, line; kwargs...)
   i_step = lg.step_increment # :log_step_increment default value
 
   if !isempty(kwargs)
