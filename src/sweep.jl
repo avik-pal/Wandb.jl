@@ -13,9 +13,9 @@ struct WandbHyperParameterSweep
 end
 
 function (hpsweep::WandbHyperParameterSweep)(func, cfg,
-  # For Compat with FluxTraining and other Integrations
-  logger=WandbLogger, args...; config=nothing,
-  func_args=(), func_kwargs=(;), kwargs...)
+    # For Compat with FluxTraining and other Integrations
+    logger=WandbLogger, args...; config=nothing,
+    func_args=(), func_kwargs=(;), kwargs...)
   lg = logger(args...; tags=[hpsweep.sweep_tag], kwargs...)
 
   try

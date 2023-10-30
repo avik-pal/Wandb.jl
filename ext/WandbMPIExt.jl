@@ -7,7 +7,7 @@ function Base.getproperty(wl::WandbLoggerMPI, id::Symbol)
 end
 
 function Wandb.WandbLoggerMPI(args...; name::Union{Nothing, String}=nothing,
-  group::Union{Nothing, String}=nothing, kwargs...)
+    group::Union{Nothing, String}=nothing, kwargs...)
   comm = MPI.COMM_WORLD
   rank = MPI.Comm_rank(comm)
   size = MPI.Comm_size(comm)

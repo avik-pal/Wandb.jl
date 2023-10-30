@@ -22,7 +22,7 @@ for func in (:log, :update_config!, :finish, :save, :get_config)
 end
 
 function FluxTraining.log_to(backend::Wandb.WandbBackend, value::Loggables.Value, name, i;
-  group=())
+    group=())
   name = _combinename(name, group)
   if length(group) == 0
     Wandb.log(backend.logger, Dict(name => cpu(value.data)))
@@ -32,7 +32,7 @@ function FluxTraining.log_to(backend::Wandb.WandbBackend, value::Loggables.Value
 end
 
 function FluxTraining.log_to(backend::Wandb.WandbBackend, image::Loggables.Image, name, i;
-  group=())
+    group=())
   name = _combinename(name, group)
   imgs = Image.(collect(image.data))
   if length(group) == 0
@@ -45,7 +45,7 @@ function FluxTraining.log_to(backend::Wandb.WandbBackend, image::Loggables.Image
 end
 
 function FluxTraining.log_to(backend::Wandb.WandbBackend, text::Loggables.Text, name, i;
-  group=())
+    group=())
   name = _combinename(name, group)
   if length(group) == 0
     Wandb.log(backend.logger, Dict(name => text.data))
@@ -55,7 +55,7 @@ function FluxTraining.log_to(backend::Wandb.WandbBackend, text::Loggables.Text, 
 end
 
 function FluxTraining.log_to(backend::Wandb.WandbBackend, hist::Loggables.Histogram, name,
-  i; group=())
+    i; group=())
   name = _combinename(name, group)
   if length(group) == 0
     Wandb.log(backend.logger, Dict(name => Histogram(cpu(hist.data))))
