@@ -20,7 +20,7 @@ Create a WandbLogger that logs to the wandb project `project`. See the documenta
 `? Wandb.wandb.init`).
 """
 function WandbLogger(; project, name=nothing, min_level=Info, step_increment=1,
-  start_step=0, config=Dict(), kwargs...)
+    start_step=0, config=Dict(), kwargs...)
   wrun = nothing
   config = _to_dict(config)
   @static if Sys.iswindows()
@@ -298,7 +298,7 @@ Construct a line series plot.
 A plot object, to be passed to Wandb.log()
 """
 function plot_line_series(xs::AbstractVecOrMat, ys::AbstractMatrix, keys::AbstractVector,
-  title::String, xname::String)
+    title::String, xname::String)
   return wandb.plot.line_series(_to_list(xs), _to_list(ys), _to_list(keys), title, xname)
 end
 
