@@ -12,8 +12,8 @@ makedocs(; sitename="Wandb", authors="Avik Pal",
       "FluxTraining.jl Integration" => "examples/fluxtraining.md",
       "HyperParameter Sweeps" => "examples/hparams.md",
       "Artifacts API" => "examples/artifacts.md",
-      "MPI.jl Integration" => "examples/mpi.md",
-    ],
+      "MPI.jl Integration" => "examples/mpi.md"
+    ]
   ])
 
 deploydocs(; repo="github.com/avik-pal/Wandb.jl.git", push_preview=true, devbranch="main")
