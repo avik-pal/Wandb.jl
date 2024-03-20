@@ -13,7 +13,7 @@ function Base.close(wa::Wandb.WandbBackend, args...; kwargs...)
   return close(wa.logger, args...; kwargs...)
 end
 
-for func in (:log, :update_config!, :finish, :save, :get_config)
+for func in (:log, :update_config!, :close, :save, :get_config)
   @eval begin
     function Wandb.$(func)(wa::Wandb.WandbBackend, args...; kwargs...)
       return Wandb.$(func)(wa.logger, args...; kwargs...)
