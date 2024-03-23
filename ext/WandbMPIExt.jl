@@ -57,7 +57,7 @@ for func in (:log, :close)
   end
 end
 
-for func in (:increment_step!, :finish, :save)
+for func in (:increment_step!, :close, :save)
   @eval begin
     function Wandb.$(func)(wa::WandbLoggerMPI, args...; kwargs...)
       return Wandb.$(func)(wa.logger, args...; kwargs...)
