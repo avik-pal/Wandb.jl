@@ -1,8 +1,16 @@
-using Documenter, Wandb
+using Documenter, DocumenterVitepress
+using Wandb
 
-makedocs(; sitename="Wandb", authors="Avik Pal",
-  format=Documenter.HTML(; prettyurls=get(ENV, "CI", nothing) == "true"),
+makedocs(;
   modules=[Wandb],
+  authors="Avik Pal",
+  repo="https://github.com/avik-pal/Wandb.jl",
+  sitename="Wandb.jl Documentation",
+  format=DocumenterVitepress.MarkdownVitepress(;
+    repo="github.com/avik-pal/Wandb.jl",
+    devurl="dev",
+    devbranch="main"
+  ),
   pages=[
     "Home" => "index.md",
     "API Reference" => "api.md",
@@ -14,6 +22,12 @@ makedocs(; sitename="Wandb", authors="Avik Pal",
       "Artifacts API" => "examples/artifacts.md",
       "MPI.jl Integration" => "examples/mpi.md"
     ]
-  ])
+  ]
+)
 
-deploydocs(; repo="github.com/avik-pal/Wandb.jl.git", push_preview=true, devbranch="main")
+deploydocs(;
+  repo="github.com/avik-pal/Wandb.jl",
+  target="build",
+  push_preview=true,
+  devbranch="main"
+)
