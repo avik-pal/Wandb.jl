@@ -45,8 +45,8 @@ close(lg)
 
 ## Examples
 
-To see the logging in action go [here](https://wandb.ai/avikpal/Wandb.jl). Detailed code for
-these examples can be accessed via the navigation menu.
+To see the logging in action go [here](https://wandb.ai/avikpal/Wandb.jl). Detailed code
+for these examples can be accessed via the navigation menu.
 
 ## Running into Issues
 
