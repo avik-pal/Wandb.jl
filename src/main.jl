@@ -83,7 +83,7 @@ end
 Terminate the current run. For more details checkout `wandb.finish` (or
 `? Wandb.wandb.finish` in the Julia REPL).
 """
-Base.close(lg::WandbLogger; kwargs...) = lg.wrun.close(; kwargs...)
+Base.close(lg::WandbLogger; kwargs...) = lg.wrun.finish(; kwargs...)
 
 """
     save(lg::WandbLogger, args...; kwargs...)
