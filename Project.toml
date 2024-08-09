@@ -1,7 +1,7 @@
 name = "Wandb"
 uuid = "ad70616a-06c9-5745-b1f1-6a5f42545108"
 authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
-version = "0.5.5"
+version = "0.5.6"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
@@ -23,7 +23,7 @@ FluxTraining = "0.3"
 MPI = "0.20"
 PackageExtensionCompat = "1"
 PlotlyJS = "v0.18.8"
-PythonCall = "0.9"
+PythonCall = "0.9.22"
 julia = "1"
 
 [extras]
