@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Flux.jl Intergration · Wandb</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Wandb</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">QuickStart</a></li><li><a class="tocitem" href="../../misc/">Miscellaneous</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../demo/">Getting Started</a></li><li class="is-active"><a class="tocitem" href>Flux.jl Intergration</a></li><li><a class="tocitem" href="../fluxtraining/">FluxTraining.jl Integration</a></li><li><a class="tocitem" href="../hparams/">HyperParameter Sweeps</a></li><li><a class="tocitem" href="../artifacts/">Artifacts API</a></li><li><a class="tocitem" href="../mpi/">MPI.jl Integration</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Flux.jl Intergration</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Flux.jl Intergration</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/avik-pal/Wandb.jl/blob/master/docs/src/examples/flux.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Integration-with-Flux.jl"><a class="docs-heading-anchor" href="#Integration-with-Flux.jl">Integration with Flux.jl</a><a id="Integration-with-Flux.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Integration-with-Flux.jl" title="Permalink"></a></h1><p>Using <code>Wandb.jl</code> in existing Flux workflows is pretty easy. Let&#39;s go through the <a href="https://github.com/FluxML/model-zoo/blob/master/vision/mlp_mnist/mlp_mnist.jl">mp_mnist</a> demo in Flux model-zoo and update it to use Wandb. Firstly, use <a href="https://github.com/FluxML/model-zoo/tree/master/vision/mlp_mnist">this evironment</a> and add <code>Wandb.jl</code> to it.</p><pre><code class="language-julia hljs">using Flux, Statistics
+using Flux.Data: DataLoader
+using Flux: onehotbatch, onecold, @epochs
+using Flux.Losses: logitcrossentropy
+using CUDA
+using MLDatasets
+using Wandb
+using Dates
+
+lg = WandbLogger(
+    project = &quot;Wandb.jl&quot;,
+    name = &quot;fluxjl-integration-$(now())&quot;,
+    config = Dict(
+        &quot;learning_rate&quot; =&gt; 3e-4,
+        &quot;batchsize&quot; =&gt; 256,
+        &quot;epochs&quot; =&gt; 100,
+        &quot;dataset&quot; =&gt; &quot;MNIST&quot;,
+        &quot;use_cuda&quot; =&gt; true,
+    ),
+)
+
+global_logger(lg)
+
+##################################################################################
+# Wandb # Instead of passing arguments around we will use the global configuration
+# Wandb # file from Wandb
+##################################################################################
+function getdata(device)
+    ENV[&quot;DATADEPS_ALWAYS_ACCEPT&quot;] = &quot;true&quot;
+
+    # Loading Dataset	
+    xtrain, ytrain = MLDatasets.MNIST.traindata(Float32)
+    xtest, ytest = MLDatasets.MNIST.testdata(Float32)
+
+    # Reshape Data in order to flatten each image into a linear array
+    xtrain = Flux.flatten(xtrain)
+    xtest = Flux.flatten(xtest)
+
+    # One-hot-encode the labels
+    ytrain, ytest = onehotbatch(ytrain, 0:9), onehotbatch(ytest, 0:9)
+
+    # Create DataLoaders (mini-batch iterators)
+    train_loader = DataLoader(
+        (xtrain, ytrain),
+        batchsize = get_config(lg, &quot;batchsize&quot;),
+        shuffle = true,
+    )
+    test_loader = DataLoader((xtest, ytest), batchsize = get_config(lg, &quot;batchsize&quot;))
+
+    return train_loader, test_loader
+end
+
+build_model(; imgsize = (28, 28, 1), nclasses = 10) =
+    Chain(Dense(prod(imgsize), 32, relu), Dense(32, nclasses))
+
+function loss_and_accuracy(data_loader, model, device)
+    acc = 0
+    ls = 0.0f0
+    num = 0
+    for (x, y) in data_loader
+        x, y = device(x), device(y)
+        ŷ = model(x)
+        ls += logitcrossentropy(model(x), y, agg = sum)
+        acc += sum(onecold(cpu(model(x))) .== onecold(cpu(y)))
+        num += size(x, 2)
+    end
+    return ls / num, acc / num
+end
+
+#################################################################
+# Wandb # If any paramters need to be updated pass them as a Dict
+#################################################################
+function train(update_params::Dict = Dict())
+    #################################
+    # Wandb # Update config if needed
+    #################################
+    update_config!(lg, update_params)
+
+    if CUDA.functional() &amp;&amp; wandb_get_config(&quot;use_cuda&quot;)
+        @info &quot;Training on CUDA GPU&quot;
+        CUDA.allowscalar(false)
+        device = gpu
+    else
+        @info &quot;Training on CPU&quot;
+        device = cpu
+    end
+
+    # Create test and train dataloaders
+    train_loader, test_loader = getdata(device)
+
+    # Construct model
+    model = build_model() |&gt; device
+    ps = Flux.params(model) # model&#39;s trainable parameters
+
+    ## Optimizer
+    opt = ADAM(get_config(lg, &quot;learning_rate&quot;))
+
+    ## Training
+    for epoch = 1:get_config(lg, &quot;epochs&quot;)
+        for (x, y) in train_loader
+            x, y = device(x), device(y) # transfer data to device
+            gs = gradient(() -&gt; logitcrossentropy(model(x), y), ps) # compute gradient
+            Flux.Optimise.update!(opt, ps, gs) # update parameters
+        end
+
+        # Report on train and test
+        train_loss, train_acc = loss_and_accuracy(train_loader, model, device)
+        test_loss, test_acc = loss_and_accuracy(test_loader, model, device)
+
+        ###################################
+        # Wandb # Log the loss and accuracy
+        ###################################
+        log(
+            lg,
+            Dict(
+                &quot;Training/Loss&quot; =&gt; train_loss,
+                &quot;Training/Accuracy&quot; =&gt; train_acc,
+                &quot;Testing/Loss&quot; =&gt; test_loss,
+                &quot;Testing/Accuracy&quot; =&gt; test_acc,
+            ),
+        )
+
+        println(&quot;Epoch=$epoch&quot;)
+        println(&quot;  train_loss = $train_loss, train_accuracy = $train_acc&quot;)
+        println(&quot;  test_loss = $test_loss, test_accuracy = $test_acc&quot;)
+    end
+end
+
+### Run training 
+train()
+
+################################
+# Wandb # Finish the Current Run
+################################
+close(lg)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../demo/">« Getting Started</a><a class="docs-footer-nextpage" href="../fluxtraining/">FluxTraining.jl Integration »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.13 on <span class="colophon-date" title="Friday 25 February 2022 16:01">Friday 25 February 2022</span>. Using Julia version 1.6.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
