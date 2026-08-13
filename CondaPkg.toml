@@ -5,4 +5,4 @@ protobuf = ">=3"
 python = ">=3.9"
 
 [pip.deps]
-wandb = ">=0.17"
+wandb = ">=0.12.17,<0.17"
